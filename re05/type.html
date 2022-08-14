@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.10.0/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script src="https://lib.baomitu.com/crypto-js/3.3.0/crypto-js.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/hls.js/1.2.0/hls.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.26.0/DPlayer.min.js"></script>
+    <link rel="stylesheet" href="./re05.css">
+    <title>最新更新</title>
+</head>
+<body>
+    <div class="videoListBox"></div>
+    <div id="button">
+        <button id="continue">继续播放</button>
+        <button id="add">添加</button>
+    </div>
+    <div id="player">
+        <button id="close">关闭</button>
+        <div id="dplayer"></div>
+    </div>
+    <script>
+        var types = [
+            {typeId: 2, title: "国产"},
+            {typeId: 3, title: "主播"},
+            {typeId: 4, title: "日韩"},
+            {typeId: 5, title: "欧美"},
+            {typeId: 37, title: "动漫"},
+        ]
+        Toast = Swal.mixin({
+            toast: true,
+            position: 'top',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: false,
+            onOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        })
+        function aesDecrypt(data, aesKey = '46cc793c53dc451b') { //解密
+            if (data.length < 1) {
+                return '';
+            }
+            let key = CryptoJS.enc.Utf8.parse(aesKey);
+            let decrypt = CryptoJS.AES.decrypt(data, key, {mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7});
+            let decryptedStr = decrypt.toString(CryptoJS.enc.Utf8);
+            return decryptedStr;
+        }
+        var search = Object.fromEntries(new URLSearchParams(location.search))
+        var typeId = 0, title = "最新更新"
+        types.forEach(f => {
+            if (search.type && f.typeId == search.type) {
+                typeId = search.type
+                title = f.title                
+            }
+        })
+        function add_item(page, length=30) {
+            $.ajax({
+                url: 'https://www.kmqsaq.com/video/getList',
+                type: 'post',
+                headers: {
+                    'content-type': 'application/json;charset=UTF-8'
+                },
+                data: JSON.stringify({
+                    clientType: 1,
+                    page: page,
+                    length: 30,
+                    typeId: typeId
+                }),
+                success: function(data, textStatus) {
+                    console.log(data)
+                    var json = JSON.parse(aesDecrypt(data.data))
+                    console.log(json)
+                    if (json.list.length < length) {
+                        $("#add").hide()
+                        Toast.fire({
+                            icon: 'success',
+                            text: `已全部加载`
+                        })
+                    }
+                    json.list.forEach(f => {
+                        let demo = $(`<div class="videoListStyle">
+                            <div class="imgArea">
+                                <a class="play">
+                                    <img>
+                                </a>
+                            </div>
+                            <p class="title"></p>
+                            <ul class="bottomSignBox">
+                                <li class="seeCount"></li>
+                                <li class="point"></li>
+                            </ul>
+                        </div>`);
+                        demo.find(".play").click(function() {
+                            $("body").css("overflow", "hidden")
+                            $('#player').show()
+                            $('#continue').hide()
+                            $.ajax({
+                                url: 'https://kmqsaq.com/video/getUrl',
+                                type: 'POST',
+                                headers: {
+                                    token: 'N2MzNDU1NzA4NDJlYzVhMGM1MmE0ZTk3ZTc5YzM4MjUyZmVlY2VlNHwyNjAyNDQ0OXwxNjYwNTE4MzUwNjcx'
+                                },
+                                data: {
+                                    "clientType":1,
+                                    "videoId": $(this).attr("videoId")
+                                },
+                                success: function(data, textStatus) {
+                                    var json = JSON.parse(aesDecrypt(data.data))
+                                    console.log(json)
+                                    // $("#play_m3u8").attr('src', `./play_m3u8.html#${json.url}`)
+                                    window.dp = new DPlayer({
+                                        container: document.getElementById('dplayer'),
+                                        video: {
+                                            url: json.url,
+                                        },
+                                        screenshot: true
+                                    });
+                                }
+                            })
+                            // console.log("点击了")
+                        })
+                        demo.find(".play").attr({videoId: f.id})
+                        demo.find("img").attr({res: f.coverImgUrl, title: f.name})
+                        demo.find(".title").text(f.name)
+                        demo.find(".seeCount").text("播放次数: " + f.seeCount)
+                        demo.find(".point").text("钻石数: " + f.point)
+                        $(".videoListBox").append(demo)
+                        $.ajax({
+                            url: f.coverImgUrl,
+                            success: function(data, textStatus) {
+                                console.log(f.coverImgUrl)
+                                $(demo).find('.imgArea img').removeAttr('res')
+                                $(demo).find('.imgArea img').attr('src', `data:image/jpg;base64,${data.replace(/^kuaimaoshipin/, "")}`)
+                            }
+                        })
+                    })
+                }
+            })
+        }
+        var page = 1
+        add_item(page)
+        $(window).keydown(function(event) {
+            console.log(event.which)
+            if (event.which == 27) {
+                $("#close").click()
+            }
+        })
+        $("title").text(title)
+        $('#player').hide()
+        $('#continue').hide()
+        $('#player').attr("disabled", true)
+        // $("#button").mouseenter(function() {
+        //     $(this).animate({
+        //         opacity: '1',
+        //         left: '2px'
+        //     }, "slow")
+        // })
+        // $("#button").mouseleave(function() {
+        //     $(this).animate({
+        //         opacity: '0.4',
+        //         left: '-50px'
+        //     }, "slow")
+        // })
+        $("#add").click(function() {
+            page++
+            add_item(page)
+            Toast.fire({
+                icon: 'success',
+                text: `添加第${page}页成功！！`
+            })
+        })
+        $("#close").click(function() {
+            $("body").css("overflow", "")
+            $("#player").hide()
+            $("#continue").show()
+            dp.pause()
+        })
+        $("#continue").click(function() {
+            $("body").css("overflow", "hidden")
+            $("#player").show()
+            $("#continue").hide()
+        })
+    </script>
+</body>
+</html>

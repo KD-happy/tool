@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.10.0/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script src="https://lib.baomitu.com/crypto-js/3.3.0/crypto-js.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/hls.js/1.2.0/hls.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.26.0/DPlayer.min.js"></script>
+    <title>全部</title>
+    <style>
+        #search {
+            height: 25px;
+            width: 200px;
+            margin-top: 10px;
+            margin-left: 20px;
+            padding-left: 5px;
+            border-radius: 10px;
+            border-color: burlywood;
+            outline: none;
+        }
+        .list {
+            margin-top: 30px;
+        }
+        .list a {
+            /* display: block; */
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <input type="text" id="search" placeholder="请输入搜索关键字">
+    <div class="list">
+        <a href="./type.html?type=2" target="_blank">国产</a>
+        <a href="./type.html?type=3" target="_blank">主播</a>
+        <a href="./type.html?type=4" target="_blank">日韩</a>
+        <a href="./type.html?type=5" target="_blank">欧美</a>
+        <a href="./type.html?type=37" target="_blank">动漫</a>
+    </div>
+    <script>
+        $("#search").keydown(function(event) {
+            if (event.which == 13) {
+                console.log($("#search").val())
+                window.open(`./search.html?search=${encodeURI($("#search").val())}`)
+                $(this).blur()
+            }
+        })
+    </script>
+</body>
+</html>

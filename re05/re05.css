@@ -1,0 +1,146 @@
+* {
+    font-size: 15px;
+}
+body {
+    background: #232323;
+    text-align: center;
+}
+
+/* 视频列表子元素 */
+.videoListStyle {
+    margin: 5px;
+    background: gainsboro;
+    display: inline-block;
+    width: 290px;
+}
+p, li, ul, #button {
+    text-align: left;
+}
+
+/* 视频标题 */
+.title {
+    margin: 5px 0 10px 0;
+    padding: 0 0 0 10px;
+    height: 40px;
+    overflow: hidden;
+}
+
+/* 视频图片 */
+.imgArea {
+    height: 162px;
+    width: 100%;
+}
+
+/* 观看次数、钻石 */
+ul {
+    padding: 0 0 0 10px;
+    margin: 5px 0;
+}
+li {
+    list-style: none;
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
+.point {
+    margin-left: 10px;
+}
+
+.imgArea img {
+    height: 100%;
+    width: 100%;
+}
+
+/* 添加按钮 */
+#button {
+    /* background: gainsboro; */
+    /* opacity: 0.4; */
+    width: 100px;
+    /* height: 100px; */
+    /* padding-bottom: 20px;
+    padding-top: 20px;
+    padding-right: 20px; */
+    position: fixed;
+    z-index: 99;
+    bottom: 100px;
+    /* left: -50px; */
+    /* text-align: center; */
+}
+#button button {
+    /* margin-top: 2px;
+    margin-bottom: 2px; */
+
+    background: lightgreen;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 25px;
+    outline: none;
+}
+/* 视频续播按钮 */
+#continue {
+    /* position: fixed; */
+    /* z-index: 99;
+    left: 20px;
+    bottom: 20px; */
+
+    background: lightgreen;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 25px;
+    outline: none;
+    margin: 15px 0px;
+}
+
+/* 播放页 */
+#player {
+    position: fixed;
+    z-index: 99;
+    bottom: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    /* background: gray;     */
+    /* opacity: 0.8; */
+    /* position: fixed;
+    z-index: 99;
+    bottom: 30%;
+    left: 20%;
+    height: 60%;
+    width: 60%; */
+    /* display: none; */
+    /* bottom: 10%; */
+}
+#dplayer {
+    /* opacity: 1; */
+    margin: 0 auto;
+    width: 80%;
+    left: 10%;
+    z-index: 22;
+    top: 0%;
+    position: fixed;
+}
+
+/* 视频播放页关闭 */
+#close {
+    opacity: 0;
+    background: greenyellow;
+    text-align: center;
+    display: inline-block;
+    height: 100%;
+    width: 100%;
+    /* left: 10px; */
+    /* margin-left: 90%; */
+}
+
+/* 滚动条 */
+*::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+*::-webkit-scrollbar-thumb {
+    border: 4px solid rgba(0, 0, 0, 0);
+    height: 6px;
+    border-radius: 25px;
+    background-clip: padding-box;
+    background-color: rgba(0, 0, 0, 0.30);
+}
