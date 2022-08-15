@@ -63,6 +63,8 @@ function add_item(page, length=30) {
                                 })
                                 if (data.code == 10) {
                                     $.removeCookie('re05_token')
+                                    $("#login").show()
+                                    $("#add_token").show()
                                 }
                                 return
                             }
