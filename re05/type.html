@@ -17,13 +17,18 @@
 <body>
     <div class="videoListBox"></div>
     <div id="button">
+        <button id="add_token">添加token</button>
+        <button id="login">登录</button>
         <button id="continue">继续播放</button>
         <button id="add">添加</button>
+        <button id="home">首页</button>
     </div>
     <div id="player">
         <button id="close">关闭</button>
         <div id="dplayer"></div>
     </div>
+    <script src="./re05.js"></script>
+    <script src="./type_add.js"></script>
     <script>
         var types = [
             {typeId: 2, title: "国产"},
@@ -32,142 +37,48 @@
             {typeId: 5, title: "欧美"},
             {typeId: 37, title: "动漫"},
         ]
-        Toast = Swal.mixin({
-            toast: true,
-            position: 'top',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: false,
-            onOpen: (toast) => {
-                toast.addEventListener('mouseenter', Swal.stopTimer)
-                toast.addEventListener('mouseleave', Swal.resumeTimer)
-            }
-        })
-        function aesDecrypt(data, aesKey = '46cc793c53dc451b') { //解密
-            if (data.length < 1) {
-                return '';
-            }
-            let key = CryptoJS.enc.Utf8.parse(aesKey);
-            let decrypt = CryptoJS.AES.decrypt(data, key, {mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7});
-            let decryptedStr = decrypt.toString(CryptoJS.enc.Utf8);
-            return decryptedStr;
-        }
         var search = Object.fromEntries(new URLSearchParams(location.search))
         var typeId = 0, title = "最新更新"
+        var dp = null;
         types.forEach(f => {
             if (search.type && f.typeId == search.type) {
                 typeId = search.type
                 title = f.title                
             }
         })
-        function add_item(page, length=30) {
-            $.ajax({
-                url: 'https://www.kmqsaq.com/video/getList',
-                type: 'post',
-                headers: {
-                    'content-type': 'application/json;charset=UTF-8'
-                },
-                data: JSON.stringify({
-                    clientType: 1,
-                    page: page,
-                    length: 30,
-                    typeId: typeId
-                }),
-                success: function(data, textStatus) {
-                    console.log(data)
-                    var json = JSON.parse(aesDecrypt(data.data))
-                    console.log(json)
-                    if (json.list.length < length) {
-                        $("#add").hide()
-                        Toast.fire({
-                            icon: 'success',
-                            text: `已全部加载`
-                        })
-                    }
-                    json.list.forEach(f => {
-                        let demo = $(`<div class="videoListStyle">
-                            <div class="imgArea">
-                                <a class="play">
-                                    <img>
-                                </a>
-                            </div>
-                            <p class="title"></p>
-                            <ul class="bottomSignBox">
-                                <li class="seeCount"></li>
-                                <li class="point"></li>
-                            </ul>
-                        </div>`);
-                        demo.find(".play").click(function() {
-                            $("body").css("overflow", "hidden")
-                            $('#player').show()
-                            $('#continue').hide()
-                            $.ajax({
-                                url: 'https://kmqsaq.com/video/getUrl',
-                                type: 'POST',
-                                headers: {
-                                    token: 'N2MzNDU1NzA4NDJlYzVhMGM1MmE0ZTk3ZTc5YzM4MjUyZmVlY2VlNHwyNjAyNDQ0OXwxNjYwNTE4MzUwNjcx'
-                                },
-                                data: {
-                                    "clientType":1,
-                                    "videoId": $(this).attr("videoId")
-                                },
-                                success: function(data, textStatus) {
-                                    var json = JSON.parse(aesDecrypt(data.data))
-                                    console.log(json)
-                                    // $("#play_m3u8").attr('src', `./play_m3u8.html#${json.url}`)
-                                    window.dp = new DPlayer({
-                                        container: document.getElementById('dplayer'),
-                                        video: {
-                                            url: json.url,
-                                        },
-                                        screenshot: true
-                                    });
-                                }
-                            })
-                            // console.log("点击了")
-                        })
-                        demo.find(".play").attr({videoId: f.id})
-                        demo.find("img").attr({res: f.coverImgUrl, title: f.name})
-                        demo.find(".title").text(f.name)
-                        demo.find(".seeCount").text("播放次数: " + f.seeCount)
-                        demo.find(".point").text("钻石数: " + f.point)
-                        $(".videoListBox").append(demo)
-                        $.ajax({
-                            url: f.coverImgUrl,
-                            success: function(data, textStatus) {
-                                console.log(f.coverImgUrl)
-                                $(demo).find('.imgArea img').removeAttr('res')
-                                $(demo).find('.imgArea img').attr('src', `data:image/jpg;base64,${data.replace(/^kuaimaoshipin/, "")}`)
-                            }
-                        })
-                    })
-                }
+        var re05_token = $.cookie('re05_token')
+        if (!re05_token) {
+            Toast.fire({
+                icon: 'error',
+                text: 're05_token 为空！！请登录！！'
             })
+            $("#login").show()
+            $("#add_token").show()
+        } else {
+            console.log(re05_token)
+            $("#login").hide()
+            $("#add_token").hide()
         }
         var page = 1
         add_item(page)
         $(window).keydown(function(event) {
-            console.log(event.which)
+            // console.log(event.which)
             if (event.which == 27) {
-                $("#close").click()
+                if ($("#player").is(':visible')) {
+                    $("#close").click()
+                }
             }
         })
         $("title").text(title)
         $('#player').hide()
         $('#continue').hide()
         $('#player').attr("disabled", true)
-        // $("#button").mouseenter(function() {
-        //     $(this).animate({
-        //         opacity: '1',
-        //         left: '2px'
-        //     }, "slow")
-        // })
-        // $("#button").mouseleave(function() {
-        //     $(this).animate({
-        //         opacity: '0.4',
-        //         left: '-50px'
-        //     }, "slow")
-        // })
+        $("#close").click(function() {
+            $("body").css("overflow", "")
+            $("#player").hide()
+            $("#continue").show()
+            dp.pause()
+        })
         $("#add").click(function() {
             page++
             add_item(page)
@@ -176,16 +87,49 @@
                 text: `添加第${page}页成功！！`
             })
         })
-        $("#close").click(function() {
-            $("body").css("overflow", "")
-            $("#player").hide()
-            $("#continue").show()
-            dp.pause()
+        $("#login").click(function() {
+            let userName = prompt("请输入邮箱：", "wlhs@163.com")
+            if (userName) {
+                let password = prompt("请输入密码：", "wlhs@163.com")
+                if (password) {
+                    user_login(userName, password)
+                } else {
+                    Toast.fire({
+                        icon: 'error',
+                        text: '取消登录'
+                    })
+                }
+            } else {
+                Toast.fire({
+                    icon: 'error',
+                    text: '取消登录'
+                })
+            }
         })
         $("#continue").click(function() {
             $("body").css("overflow", "hidden")
             $("#player").show()
             $("#continue").hide()
+        })
+        $("#home").click(function() {
+            location.href = "./"
+        })
+        $("#add_token").click(function() {
+            let tmp_token = prompt("请输入token：")
+            if (tmp_token) {
+                Toast.fire({
+                    icon: 'success',
+                    text: '添加成功'
+                })
+                $.cookie('re05_token', tmp_token, {export: 1})
+                $("#login").hide()
+                $("#add_token").hide()
+            } else {
+                Toast.fire({
+                    icon: 'error',
+                    text: '取消添加'
+                })
+            }
         })
     </script>
 </body>
