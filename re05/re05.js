@@ -45,6 +45,7 @@ function user_login(userName, password) {
                     text: '登录成功'
                 })
                 $("#login").hide()
+                $("#add_token").hide()
                 re05_token = login_info.token
             }
             console.log(data)
