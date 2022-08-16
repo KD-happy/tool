@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.10.0/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script src="https://lib.baomitu.com/crypto-js/3.3.0/crypto-js.min.js"></script>
+    <link rel="stylesheet" href="./re05.css">
+    <title>专题</title>
+    <style>
+        .title {
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="specialList"></div>
+    <script src="./re05.js"></script>
+    <script>
+        $.ajax({
+            url: 'https://www.kmqsaq.com/album/getAlbumList',
+            type: 'post',
+            data: JSON.stringify({
+                clientType: 1,
+                length: 99999,
+                page: 1
+            }),
+            contentType: 'application/json',
+            success: function(data, textStatus) {
+                if (data.code != 1) {
+                    Toast.fire({
+                        icon: 'error',
+                        text: data.message
+                    })
+                } else {
+                    let album_list = JSON.parse(aesDecrypt(data.data))
+                    console.log(album_list)
+                    album_list.list.forEach(f => {
+                        let demo = $(`<div class="videoListStyle">
+                                <div class="imgArea">
+                                    <a class="play">
+                                        <img>
+                                    </a>
+                                </div>
+                                <p class="title"></p>
+                            </div>`)
+                        demo.find(".play").attr({
+                            actor_id: f.id,
+                            href: `./special_type.html?albumId=${f.id}`,
+                            target: '_blank',
+                            title: f.name
+                        })
+                        demo.find(".title").text(f.name)
+                        $("#specialList").append(demo)
+                        $.ajax({
+                            url: f.coverImageX,
+                            success: function(data, textStatus) {
+                                // console.log(f.coverImgUrl)
+                                $(demo).find('.imgArea img').removeAttr('res')
+                                $(demo).find('.imgArea img').attr('src', `data:image/jpg;base64,${data.replace(/^kuaimaoshipin/, "")}`)
+                            }
+                        })
+                    })
+                }
+            }
+        })
+    </script>
+</body>
+</html>

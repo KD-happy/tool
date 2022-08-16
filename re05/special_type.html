@@ -2,6 +2,7 @@
 <html lang="zh-cn">
 <head>
     <meta charset="UTF-8">
+    <meta name="referrer" content="no-referrer">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.10.0/dist/sweetalert2.all.min.js"></script>
@@ -11,7 +12,7 @@
     <script src="https://cdn.bootcdn.net/ajax/libs/hls.js/1.2.0/hls.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.26.0/DPlayer.min.js"></script>
     <link rel="stylesheet" href="./re05.css">
-    <title>搜索</title>
+    <title>台湾SWAG</title>
 </head>
 <body>
     <div class="videoListBox"></div>
@@ -27,12 +28,13 @@
         <div id="dplayer"></div>
     </div>
     <script src="./re05.js"></script>
-    <script src="./search_add.js"></script>
+    <script src="./special_add.js"></script>
     <script>
-        var page = 1
         var search = Object.fromEntries(new URLSearchParams(location.search))
-        add_item(page, search.search)
-        $("title").text(`搜索 - ${search.search ? search.search : ""}`)
+        var albumId = 2
+        albumId = search.albumId != null ? search.albumId : albumId
+        get_title(albumId)
+        var dp = null;
         var re05_token = $.cookie('re05_token')
         if (!re05_token) {
             Toast.fire({
@@ -46,6 +48,8 @@
             $("#login").hide()
             $("#add_token").hide()
         }
+        var page = 1
+        add_item(page)
         $(window).keydown(function(event) {
             // console.log(event.which)
             if (event.which == 27) {
@@ -57,19 +61,19 @@
         $('#player').hide()
         $('#continue').hide()
         $('#player').attr("disabled", true)
-        $("#add").click(function() {
-            page++
-            add_item(page, search.search)
-            Toast.fire({
-                icon: 'success',
-                text: `添加第${page}页成功！！`
-            })
-        })
         $("#close").click(function() {
             $("body").css("overflow", "")
             $("#player").hide()
             $("#continue").show()
             dp.pause()
+        })
+        $("#add").click(function() {
+            page++
+            add_item(page)
+            Toast.fire({
+                icon: 'success',
+                text: `添加第${page}页成功！！`
+            })
         })
         $("#login").click(function() {
             let userName = prompt("请输入邮箱：", "wlhs@163.com")

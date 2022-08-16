@@ -8,7 +8,7 @@ function add_item(page, length=30) {
         data: JSON.stringify({
             clientType: 1,
             page: page,
-            length: 30,
+            length: length,
             typeId: typeId
         }),
         success: function(data, textStatus) {
@@ -32,9 +32,9 @@ function add_item(page, length=30) {
             json.list.forEach(f => {
                 let demo = $(`<div class="videoListStyle">
                     <div class="imgArea">
-                        <a class="play">
+                        <div class="play">
                             <img>
-                        </a>
+                        </div>
                     </div>
                     <div class="time">00</div>
                     <p class="title"></p>

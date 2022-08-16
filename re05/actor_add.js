@@ -1,19 +1,16 @@
-function add_item(page, searchText="", length=30) {
+function add_item(page, length=20) {
     $.ajax({
-        url: 'https://www.kmqsaq.com/video/getList',
-        type: 'POST',
+        url: 'https://www.kmqsaq.com/actor/getActorVideoList',
+        type: 'post',
+        headers: {
+            'content-type': 'application/json;charset=UTF-8'
+        },
         data: JSON.stringify({
             clientType: 1,
             page: page,
             length: length,
-            orderText: [{
-                column: "addTimeStamp",
-                dir: "desc"
-            }],
-            searchText: searchText,
-            type: 1
+            actorId: actorId
         }),
-        contentType: 'application/json',
         success: function(data, textStatus) {
             if (data.code != 1) {
                 Toast.fire({
@@ -107,6 +104,32 @@ function add_item(page, searchText="", length=30) {
                     }
                 })
             })
+        }
+    })
+}
+
+function get_title(actorId) {
+    $.ajax({
+        url: 'https://www.kmqsaq.com/actor/getActorInfo',
+        type: 'post',
+        headers: {
+            'content-type': 'application/json;charset=UTF-8'
+        },
+        data: JSON.stringify({
+            actorId: actorId,
+            clientType: 1
+        }),
+        success: function(data, textStatus) {
+            if (data.code != 1) {
+                Toast.fire({
+                    icon: 'error',
+                    text: data.message
+                })
+                return
+            }
+            var json = JSON.parse(aesDecrypt(data.data))
+            console.log(json)
+            $("title").text(json.info.name)
         }
     })
 }

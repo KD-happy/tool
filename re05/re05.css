@@ -17,6 +17,9 @@ body {
 p, li, ul, #button {
     text-align: left;
 }
+.play {
+    cursor: pointer;
+}
 
 /* 视频标题 */
 .title {
@@ -53,6 +56,7 @@ li {
     position: absolute;
     bottom: 5px;
     right: 5px;
+    cursor: pointer;
 }
 .time {
     position: absolute;
@@ -83,6 +87,9 @@ li {
     border: none;
     border-radius: 25px;
     outline: none;
+}
+#button * {
+    cursor: pointer;
 }
 /* 视频续播按钮 */
 #continue {
