@@ -39,6 +39,7 @@ function add_item(page, searchText="", length=30) {
                             <img>
                         </div>
                     </div>
+                    <div class="addTime">00</div>
                     <div class="time">00</div>
                     <p class="title"></p>
                     <ul class="bottomSignBox">
@@ -91,6 +92,7 @@ function add_item(page, searchText="", length=30) {
                 demo.find(".play").attr({videoId: f.id})
                 demo.find("img").attr({res: f.coverImgUrl, title: f.name})
                 demo.find(".title").text(f.name)
+                demo.find(".addTime").text(f.addTime)
                 demo.find(".time").text(getVideoTimeLength(f.length))
                 demo.find(".seeCount").text("播放次数: " + f.seeCount)
                 demo.find(".point").text("钻石数: " + f.point)
