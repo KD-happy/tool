@@ -91,6 +91,17 @@
                 text: '没有 videoId'
             })
         }
+        $(window).keydown(function(event) {
+            // console.log(event.which)
+            let _key = !event.altKey && !event.shiftKey && !event.ctrlKey
+            if (event.key == 'w' && _key && $("#dplayer").is(':visible')) {
+                let full = document.querySelector(".dplayer-full-in-icon")
+                full && full.click()
+            } else if (event.key == 'f' && _key && $("#dplayer").is(':visible')) {
+                let full = document.querySelector(".dplayer-full-icon")
+                full && full.click()
+            }
+        })
     </script>
 </body>
 </html>

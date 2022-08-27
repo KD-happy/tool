@@ -48,10 +48,17 @@
         }
         $(window).keydown(function(event) {
             // console.log(event.which)
+            let _key = !event.altKey && !event.shiftKey && !event.ctrlKey
             if (event.which == 27) {
                 if ($("#player").is(':visible')) {
                     $("#close").click()
                 }
+            } else if (event.key == 'w' && _key && $("#player").is(':visible')) {
+                let full = document.querySelector(".dplayer-full-in-icon")
+                full && full.click()
+            } else if (event.key == 'f' && _key && $("#player").is(':visible')) {
+                let full = document.querySelector(".dplayer-full-icon")
+                full && full.click()
             }
         })
         $('#player').hide()
