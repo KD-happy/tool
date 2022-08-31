@@ -70,7 +70,7 @@ function user_login(userName, password) {
                     text: data.message
                 })
             } else {
-                $.cookie('fi11_auth', data.data.token, {export: 1})
+                $.cookie('fi11_auth', data.data.token, {expires: 1})
                 Toast.fire({
                     icon: 'success',
                     text: '登录成功'

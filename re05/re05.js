@@ -39,7 +39,7 @@ function user_login(userName, password) {
                 })
             } else {
                 let login_info = JSON.parse(aesDecrypt(data.data))
-                $.cookie('re05_token', login_info.token, {export: 1})
+                $.cookie('re05_token', login_info.token, {expires: 1})
                 Toast.fire({
                     icon: 'success',
                     text: '登录成功'
