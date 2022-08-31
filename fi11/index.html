@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+    <title>首页</title>
+    <style>
+        body {
+            user-select: none;
+            background: #232323;
+        }
+        #search {
+            height: 25px;
+            width: 200px;
+            margin-top: 10px;
+            margin-left: 20px;
+            padding-left: 5px;
+            border-radius: 10px;
+            border-color: burlywood;
+            outline: none;
+        }
+        .list {
+            margin-top: 30px;
+        }
+        /* 行块盒就是直接切换 [aaa] 不会分开 */
+        .list a {
+            display: inline-block;
+            margin: 10px;
+            text-decoration: none;
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <input type="text" id="search" placeholder="请输入搜索关键字">
+    <div class="list">
+        <a href="./actor.html" target="_blank">演员列表</a>
+        <br>
+        <a href="./type.html" target="_blank">最新更新</a>
+        <a href="./type.html?type=4" target="_blank">国产</a>
+        <a href="./type.html?type=11" target="_blank">主播</a>
+        <a href="./type.html?type=17" target="_blank">日韩</a>
+        <a href="./type.html?type=23" target="_blank">欧美</a>
+        <a href="./type.html?type=29" target="_blank">动漫</a>
+    </div>
+    <script>
+        $("#search").keydown(function(event) {
+            if (event.which == 13) {
+                console.log($("#search").val())
+                window.open(`./search.html?search=${encodeURI($("#search").val())}`)
+                $(this).blur()
+            }
+        })
+    </script>
+</body>
+</html>
