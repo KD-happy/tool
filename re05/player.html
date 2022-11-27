@@ -5,104 +5,19 @@
     <meta name="referrer" content="no-referrer">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.10.0/dist/sweetalert2.all.min.js"></script>
-    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
-    <script src="https://cdn.staticfile.org/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
-    <script src="https://lib.baomitu.com/crypto-js/3.3.0/crypto-js.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/hls.js/1.2.0/hls.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.26.0/DPlayer.min.js"></script>
-    <link rel="stylesheet" href="./re05.css">
-    <title>视频播放</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./source/vue-2.6.12.js"></script>
+    <script src="./source/jquery.min.js"></script>
+    <script src="./source/jquery.cookie.min.js"></script>
+    <script src="./source/DPlayer.min.js"></script>
+    <script src="./source/hls.min.js"></script>
+    <script src="./source/crypto-js.min.js"></script>
+    <script src="./source/sweetalert2.all.min.js"></script>
+    <title>播放器</title>
 </head>
 <body>
     <div id="dplayer"></div>
-    <script src="./re05.js"></script>
-    <script>
-        var re05_token = $.cookie('re05_token')
-        if (!re05_token) {
-            Toast.fire({
-                icon: 'error',
-                text: 're05_token 为空！！请登录！！'
-            })
-            $("#login").show()
-            $("#add_token").show()
-        } else {
-            console.log(re05_token)
-            $("#login").hide()
-            $("#add_token").hide()
-        }
-        var search = Object.fromEntries(new URLSearchParams(location.search))
-        if (search.videoId) {
-            $.ajax({
-                url: 'https://www.kmqsaq.com/video/getInfo',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    clientType: 1,
-                    videoId: search.videoId
-                }),
-                success: function(data, textStatus) {
-                    if (data.code != 1) {
-                        Toast.fire({
-                            icon: 'error',
-                            text: data.message
-                        })
-                        return
-                    }
-                    var json = JSON.parse(aesDecrypt(data.data))
-                    $("title").text(`视频播放 - ${json.info.name}`)
-                }
-            })
-            $.ajax({
-                url: 'https://kmqsaq.com/video/getUrl',
-                type: 'POST',
-                contentType: 'application/json',
-                headers: {
-                    token: re05_token
-                },
-                data: JSON.stringify({
-                    "clientType":1,
-                    "videoId": search.videoId
-                }),
-                success: function(data, textStatus) {
-                    if (data.code != 1) {
-                        Toast.fire({
-                            icon: 'error',
-                            text: data.message
-                        })
-                        if (data.code == 10) {
-                            $.removeCookie('re05_token')
-                        }
-                        return
-                    }
-                    var json = JSON.parse(aesDecrypt(data.data))
-                    console.log(json)
-                    window.dp = new DPlayer({
-                        container: document.getElementById('dplayer'),
-                        video: {
-                            url: json.url,
-                        },
-                        screenshot: true
-                    });
-                }
-            })
-        } else {
-            Toast.fire({
-                icon: 'error',
-                text: '没有 videoId'
-            })
-        }
-        $(window).keydown(function(event) {
-            // console.log(event.which)
-            let _key = !event.altKey && !event.shiftKey && !event.ctrlKey
-            if (event.key == 'w' && _key && $("#dplayer").is(':visible')) {
-                let full = document.querySelector(".dplayer-full-in-icon")
-                full && full.click()
-            } else if (event.key == 'f' && _key && $("#dplayer").is(':visible')) {
-                let full = document.querySelector(".dplayer-full-icon")
-                full && full.click()
-            }
-        })
-    </script>
+    <script src="./js/main.js"></script>
+    <script src="./js/player.js"></script>
 </body>
 </html>

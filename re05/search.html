@@ -5,125 +5,48 @@
     <meta name="referrer" content="no-referrer">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.10.0/dist/sweetalert2.all.min.js"></script>
-    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
-    <script src="https://cdn.staticfile.org/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
-    <script src="https://lib.baomitu.com/crypto-js/3.3.0/crypto-js.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/hls.js/1.2.0/hls.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dplayer/1.26.0/DPlayer.min.js"></script>
-    <link rel="stylesheet" href="./re05.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./source/vue-2.6.12.js"></script>
+    <script src="./source/jquery.min.js"></script>
+    <script src="./source/jquery.cookie.min.js"></script>
+    <script src="./source/DPlayer.min.js"></script>
+    <script src="./source/hls.min.js"></script>
+    <script src="./source/crypto-js.min.js"></script>
+    <script src="./source/sweetalert2.all.min.js"></script>
     <title>搜索</title>
 </head>
 <body>
-    <div class="videoListBox"></div>
-    <div id="button">
-        <button id="add_token">添加token</button>
-        <button id="login">登录</button>
-        <button id="continue">继续播放</button>
-        <button id="add">添加</button>
-        <button id="home">首页</button>
+    <div id="app">
+        <div class="videoListBox">
+            <div class="videoListStyle" v-for="(item, index) in videoList" :key="item.id">
+                <div class="imgArea">
+                    <div class="play" :videoid="item.id" @click="playVideo(item.id)">
+                        <img :title="item.name" :src="item.coverImgUrl">
+                    </div>
+                </div>
+                <div class="addTime">{{item.addTime}}</div>
+                <div class="time">{{item.length | getVideoTimeLength}}</div>
+                <p class="title">{{item.name}}</p>
+                <ul class="bottomSignBox">
+                    <li class="seeCount">播放次数: {{item.seeCount}}</li>
+                    <!-- <li class="point">钻石数: {{item.point}}</li> -->
+                </ul>
+                <button id="play_blank" @click="playNew(item.id)">新窗口</button>
+            </div>
+        </div>
+        <div id="button">
+            <button id="add_token" @click="add_token">添加token</button>
+            <button id="login" @click="login">登录</button>
+            <button id="continue" @click="continue_play">继续播放</button>
+            <button id="add" @click="getList">添加</button>
+            <button id="home" @click="home">首页</button>
+        </div>
+        <div id="player">
+            <button id="close" @click="close">关闭</button>
+            <div id="dplayer"></div>
+        </div>
     </div>
-    <div id="player">
-        <button id="close">关闭</button>
-        <div id="dplayer"></div>
-    </div>
-    <script src="./re05.js"></script>
-    <script src="./search_add.js"></script>
-    <script>
-        var page = 1
-        var search = Object.fromEntries(new URLSearchParams(location.search))
-        add_item(page, search.search)
-        $("title").text(`搜索 - ${search.search ? search.search : ""}`)
-        var re05_token = $.cookie('re05_token')
-        if (!re05_token) {
-            Toast.fire({
-                icon: 'error',
-                text: 're05_token 为空！！请登录！！'
-            })
-            $("#login").show()
-            $("#add_token").show()
-        } else {
-            console.log(re05_token)
-            $("#login").hide()
-            $("#add_token").hide()
-        }
-        $(window).keydown(function(event) {
-            // console.log(event.which)
-            let _key = !event.altKey && !event.shiftKey && !event.ctrlKey
-            if (event.which == 27) {
-                if ($("#player").is(':visible')) {
-                    $("#close").click()
-                }
-            } else if (event.key == 'w' && _key && $("#player").is(':visible')) {
-                let full = document.querySelector(".dplayer-full-in-icon")
-                full && full.click()
-            } else if (event.key == 'f' && _key && $("#player").is(':visible')) {
-                let full = document.querySelector(".dplayer-full-icon")
-                full && full.click()
-            }
-        })
-        $('#player').hide()
-        $('#continue').hide()
-        $('#player').attr("disabled", true)
-        $("#add").click(function() {
-            page++
-            add_item(page, search.search)
-            Toast.fire({
-                icon: 'success',
-                text: `添加第${page}页成功！！`
-            })
-        })
-        $("#close").click(function() {
-            $("body").css("overflow", "")
-            $("#player").hide()
-            $("#continue").show()
-            dp.pause()
-        })
-        $("#login").click(function() {
-            let userName = prompt("请输入邮箱：", "wlhs@163.com")
-            if (userName) {
-                let password = prompt("请输入密码：", "wlhs@163.com")
-                if (password) {
-                    user_login(userName, password)
-                } else {
-                    Toast.fire({
-                        icon: 'error',
-                        text: '取消登录'
-                    })
-                }
-            } else {
-                Toast.fire({
-                    icon: 'error',
-                    text: '取消登录'
-                })
-            }
-        })
-        $("#continue").click(function() {
-            $("body").css("overflow", "hidden")
-            $("#player").show()
-            $("#continue").hide()
-        })
-        $("#home").click(function() {
-            location.href = "./"
-        })
-        $("#add_token").click(function() {
-            let tmp_token = prompt("请输入token：")
-            re05_token = tmp_token
-            if (tmp_token) {
-                Toast.fire({
-                    icon: 'success',
-                    text: '添加成功'
-                })
-                $.cookie('re05_token', tmp_token, {expires: 1})
-                $("#login").hide()
-                $("#add_token").hide()
-            } else {
-                Toast.fire({
-                    icon: 'error',
-                    text: '取消添加'
-                })
-            }
-        })
-    </script>
+    <script src="./js/main.js"></script>
+    <script src="./js/search_app.js"></script>
 </body>
 </html>

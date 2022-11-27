@@ -5,91 +5,31 @@
     <meta name="referrer" content="no-referrer">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.10.0/dist/sweetalert2.all.min.js"></script>
-    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
-    <script src="https://cdn.staticfile.org/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
-    <script src="https://lib.baomitu.com/crypto-js/3.3.0/crypto-js.min.js"></script>
-    <link rel="stylesheet" href="./re05.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/actor.css">
+    <script src="./source/vue-2.6.12.js"></script>
+    <script src="./source/jquery.min.js"></script>
+    <script src="./source/jquery.cookie.min.js"></script>
+    <script src="./source/crypto-js.min.js"></script>
+    <script src="./source/sweetalert2.all.min.js"></script>
     <title>演员列表</title>
-    <style>
-        .title {
-            height: 20px;
-            padding: 0;
-            margin-bottom: 5px;
-            margin-left: 5px;
-        }
-        .description {
-            height: 40px;
-            margin: 0;
-            overflow-x: hidden;
-            overflow-y: initial;
-        }
-        .imgArea img {
-            height: 100%;
-            width: auto;
-        }
-        .description::-webkit-scrollbar-thumb {
-            border: 4px solid rgba(0, 0, 0, 0);
-            height: 6px;
-            border-radius: 25px;
-            background-clip: padding-box;
-            background-color: rgba(0, 0, 0, 0.30);
-        }
-    </style>
 </head>
 <body>
-    <div id="actorList"></div>
-    <script src="./re05.js"></script>
-    <script>
-        $.ajax({
-            url: 'https://www.kmqsaq.com/actor/getActorList',
-            type: 'post',
-            data: JSON.stringify({
-                clientType: 1,
-                length: 99999,
-                page: 1
-            }),
-            contentType: 'application/json',
-            success: function(data, textStatus) {
-                if (data.code != 1) {
-                    Toast.fire({
-                        icon: 'error',
-                        text: data.message
-                    })
-                } else {
-                    let album_list = JSON.parse(aesDecrypt(data.data))
-                    console.log(album_list)
-                    album_list.list.forEach(f => {
-                        let demo = $(`<div class="videoListStyle">
-                                <div class="imgArea">
-                                    <a class="play">
-                                        <img>
-                                    </a>
-                                </div>
-                                <p class="title"></p>
-                                <p class="description"></p>
-                            </div>`)
-                        demo.find(".play").attr({
-                            actor_id: f.id,
-                            href: `./actor_type.html?actorId=${f.id}`,
-                            target: '_blank',
-                            title: f.name
-                        })
-                        demo.find(".title").text(f.name)
-                        demo.find(".description").text(f.description)
-                        $("#actorList").append(demo)
-                        $.ajax({
-                            url: f.headIco,
-                            success: function(data, textStatus) {
-                                // console.log(f.coverImgUrl)
-                                $(demo).find('.imgArea img').removeAttr('res')
-                                $(demo).find('.imgArea img').attr('src', `data:image/jpg;base64,${data.replace(/^kuaimaoshipin/, "")}`)
-                            }
-                        })
-                    })
-                }
-            }
-        })
-    </script>
+    <div id="app">
+        <div class="videoListBox">
+            <!-- vue for循环 -->
+            <div class="videoListStyle" v-for="(item, index) in videoList" :key="item.id">
+                <div class="imgArea">
+                    <div class="play" :videoid="item.id" @click="playVideo(item.id)">
+                        <img :title="item.name" :src="item.headIco">
+                    </div>
+                </div>
+                <p class="title">{{item.name}}</p>
+                <p class="description">{{item.description}}</p>
+            </div>
+        </div>
+    </div>
+    <script src="./js/main.js"></script>
+    <script src="./js/actor_app.js"></script>
 </body>
 </html>
