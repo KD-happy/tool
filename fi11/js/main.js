@@ -9,14 +9,13 @@ const Toast = Swal.mixin({
         toast.addEventListener('mouseleave', Swal.resumeTimer)
     }
 })
-function aesDecrypt(data, aesKey = '46cc793c53dc451b') { //解密
-    if (data.length < 1) {
-        return '';
-    }
-    let key = CryptoJS.enc.Utf8.parse(aesKey);
-    let decrypt = CryptoJS.AES.decrypt(data, key, {mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7});
-    let decryptedStr = decrypt.toString(CryptoJS.enc.Utf8);
-    return decryptedStr;
+function decryptFn(data) {
+    var aesKey = "46cc793c53dc451b"
+    var aes = CryptoJS.AES.decrypt(data, CryptoJS.enc.Utf8.parse(aesKey), {
+        mode: CryptoJS.mode.ECB,
+        padding: CryptoJS.pad.Pkcs7
+    })
+    return aes.toString(CryptoJS.enc.Utf8)
 }
 function getVideoTimeLength(s) {
     let hours = null;
@@ -61,102 +60,95 @@ function getVideoTimeLength(s) {
 }
 function user_login(userName, password) {
     $.ajax({
-        url: 'https://www.kmqsaq.com/user/login',
+        url: 'https://www.hxc-api.com/login/userLogin',
         type: 'post',
         contentType: 'application/json;charset=UTF-8',
         data: JSON.stringify({
-            clientType: 1,
-            password: password,
-            userName: userName
+            user_pass: password,
+            user_login: userName
         }),
         accepts: 'application/json',
         success: function(data, textStatus, xhr) {
-            if (data.code != 1) {
+            if (data.code != 0) {
                 Toast.fire({
                     icon: 'error',
-                    text: data.message
+                    text: data.msg
                 })
             } else {
-                let login_info = JSON.parse(aesDecrypt(data.data))
-                $.cookie('re05_token', login_info.token, {expires: 1})
+                $.cookie('fi11_auth', data.data.token, {expires: 1})
                 Toast.fire({
                     icon: 'success',
                     text: '登录成功'
                 })
                 $("#login").hide()
                 $("#add_token").hide()
-                re05_token = login_info.token
+                fi11_auth = data.data.token
             }
         }
     })
 }
 function get_album_title(albumId) {
     $.ajax({
-        url: 'https://www.kmqsaq.com/album/getAlbumInfo',
+        url: 'https://www.hxc-api.com/album/getAlbumInfo',
         type: 'post',
         headers: {
             'content-type': 'application/json;charset=UTF-8'
         },
         data: JSON.stringify({
-            albumId: albumId,
-            clientType: 1
+            albumId: parseInt(albumId)
         }),
         success: function(data, textStatus) {
-            if (data.code != 1) {
+            if (data.code != 0) {
                 Toast.fire({
                     icon: 'error',
-                    text: data.message
+                    text: data.msg
                 })
                 return
             }
-            var json = JSON.parse(aesDecrypt(data.data))
-            $("title").text(json.info.name)
+            $("title").text(data.data.info.name)
         }
     })
 }
 function get_actor_title(actorId) {
     $.ajax({
-        url: 'https://www.kmqsaq.com/actor/getActorInfo',
+        url: 'https://www.hxc-api.com/actor/getActorInfo',
         type: 'post',
         headers: {
             'content-type': 'application/json;charset=UTF-8'
         },
         data: JSON.stringify({
-            actorId: actorId,
-            clientType: 1
+            actorId: parseInt(actorId)
         }),
         success: function(data, textStatus) {
-            if (data.code != 1) {
+            if (data.code != 0) {
                 Toast.fire({
                     icon: 'error',
-                    text: data.message
+                    text: data.msg
                 })
                 return
             }
-            var json = JSON.parse(aesDecrypt(data.data))
-            $("title").text(json.info.name)
+            $("title").text(data.data.info.name)
         }
     })
 }
 function playVideo(id) {
     $.ajax({
-        url: 'https://kmqsaq.com/video/getUrl',
+        url: 'https://www.hxc-api.com/videos/getPreUrl',
         type: 'POST',
         headers: {
-            token: re05_token
+            auth: fi11_auth
         },
         data: {
-            "clientType":1,
             "videoId": id
         },
         success: function(data, textStatus) {
-            if (data.code != 1) {
+            if (data.code != 0) {
                 Toast.fire({
                     icon: 'error',
-                    text: data.message
+                    text: data.msg
                 })
                 if (data.code == 10) {
-                    $.removeCookie('re05_token')
+                    $.removeCookie('fi11_auth')
                     $("#login").show()
                     $("#add_token").show()
                 }
@@ -165,11 +157,13 @@ function playVideo(id) {
             $("body").css("overflow", "hidden")
             $('#player').show()
             $('#continue').hide()
-            var json = JSON.parse(aesDecrypt(data.data))
+            let url = new URL(data.data.url)
+            url.searchParams.delete('start')
+            url.searchParams.delete('end')
             window.dp = new DPlayer({
                 container: document.getElementById('dplayer'),
                 video: {
-                    url: json.url,
+                    url: url.toString()
                 },
                 screenshot: true
             });
@@ -178,13 +172,13 @@ function playVideo(id) {
 }
 function add_token() {
     let tmp_token = prompt("请输入token：")
-    re05_token = tmp_token
+    fi11_auth = tmp_token
     if (tmp_token) {
         Toast.fire({
             icon: 'success',
             text: '添加成功'
         })
-        $.cookie('re05_token', tmp_token, {expires: 1})
+        $.cookie('fi11_auth', tmp_token, {expires: 1})
         $("#login").hide()
         $("#add_token").hide()
     } else {
@@ -197,7 +191,7 @@ function add_token() {
 function login() {
     let userName = prompt("请输入邮箱：", "wlhs@163.com")
     if (userName) {
-        let password = prompt("请输入密码：", "wlhs@163.com")
+        let password = prompt("请输入密码：", "wlhs163com")
         if (password) {
             user_login(userName, password)
         } else {
@@ -215,7 +209,6 @@ function login() {
 }
 
 $(window).keydown(function(event) {
-    // console.log(event.which)
     let _key = !event.altKey && !event.shiftKey && !event.ctrlKey
     if (event.which == 27) {
         if ($("#player").is(':visible')) {
@@ -231,11 +224,11 @@ $(window).keydown(function(event) {
 })
 $('#player').hide()
 $('#continue').hide()
-var re05_token = $.cookie('re05_token')
-if (!re05_token) {
+var fi11_auth = $.cookie('fi11_auth')
+if (!fi11_auth) {
     Toast.fire({
         icon: 'error',
-        text: 're05_token 为空！！请登录！！'
+        text: 'fi11_auth 为空！！请登录！！'
     })
     $("#login").show()
     $("#add_token").show()

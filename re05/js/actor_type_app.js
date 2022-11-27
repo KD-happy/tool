@@ -9,41 +9,10 @@ const vm = new Vue({
     },
     methods: {
         login: function() {
-            let userName = prompt("请输入邮箱：", "wlhs@163.com")
-            if (userName) {
-                let password = prompt("请输入密码：", "wlhs@163.com")
-                if (password) {
-                    user_login(userName, password)
-                } else {
-                    Toast.fire({
-                        icon: 'error',
-                        text: '取消登录'
-                    })
-                }
-            } else {
-                Toast.fire({
-                    icon: 'error',
-                    text: '取消登录'
-                })
-            }
+            login()
         },
         add_token: function() {
-            let tmp_token = prompt("请输入token：")
-            re05_token = tmp_token
-            if (tmp_token) {
-                Toast.fire({
-                    icon: 'success',
-                    text: '添加成功'
-                })
-                $.cookie('re05_token', tmp_token, {expires: 1})
-                $("#login").hide()
-                $("#add_token").hide()
-            } else {
-                Toast.fire({
-                    icon: 'error',
-                    text: '取消添加'
-                })
-            }
+            add_token()
         },
         continue_play: function() {
             $("body").css("overflow", "hidden")
@@ -89,6 +58,10 @@ const vm = new Vue({
                             })
                         })
                         if (json.list.length == _this.length) {
+                            Toast.fire({
+                                icon: 'success',
+                                text: `${_this.page*_this.length}/${json.recordsTotal}`
+                            })
                             _this.canLoad = true
                             _this.page++
                         } else {
@@ -103,44 +76,7 @@ const vm = new Vue({
             }
         },
         playVideo: function(id) {
-            $.ajax({
-                url: 'https://kmqsaq.com/video/getUrl',
-                type: 'POST',
-                headers: {
-                    token: re05_token
-                },
-                data: {
-                    "clientType":1,
-                    "videoId": id
-                },
-                success: function(data, textStatus) {
-                    if (data.code != 1) {
-                        Toast.fire({
-                            icon: 'error',
-                            text: data.message
-                        })
-                        if (data.code == 10) {
-                            $.removeCookie('re05_token')
-                            $("#login").show()
-                            $("#add_token").show()
-                        }
-                        return
-                    }
-                    $("body").css("overflow", "hidden")
-                    $('#player').show()
-                    $('#continue').hide()
-                    var json = JSON.parse(aesDecrypt(data.data))
-                    console.log(json)
-                    // $("#play_m3u8").attr('src', `./play_m3u8.html#${json.url}`)
-                    window.dp = new DPlayer({
-                        container: document.getElementById('dplayer'),
-                        video: {
-                            url: json.url,
-                        },
-                        screenshot: true
-                    });
-                }
-            })
+            playVideo(id)
         },
         playNew: function(id) {
             window.open(`./player.html?videoId=${id}`)
@@ -161,11 +97,10 @@ const vm = new Vue({
 var search = Object.fromEntries(new URLSearchParams(location.search))
 var actorId = 2
 actorId = search.actorId != null ? search.actorId : actorId
-vm.actorId = actorId
 get_actor_title(actorId)
 
+vm.actorId = actorId
 vm.getList()
-
 window.addEventListener('scroll', function(e) {
     let scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop
     let clientHeight = document.documentElement.clientHeight

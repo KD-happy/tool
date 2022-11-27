@@ -2,17 +2,20 @@
 <html lang="zh-cn">
 <head>
     <meta charset="UTF-8">
-    <meta name="referrer" content="no-referrer">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./css/style.css">
-    <link rel="stylesheet" href="./css/actor.css">
     <script src="./source/vue-2.6.12.js"></script>
     <script src="./source/jquery.min.js"></script>
     <script src="./source/jquery.cookie.min.js"></script>
     <script src="./source/crypto-js.min.js"></script>
     <script src="./source/sweetalert2.all.min.js"></script>
-    <title>演员列表</title>
+    <title>专题</title>
+    <style>
+        .title {
+            height: 20px;
+        }
+    </style>
 </head>
 <body>
     <div id="app">
@@ -21,15 +24,14 @@
             <div class="videoListStyle" v-for="(item, index) in videoList" :key="item.id">
                 <div class="imgArea">
                     <div class="play" :videoid="item.id" @click="playVideo(item.id)">
-                        <img :title="item.name" :src="item.headIco">
+                        <img :title="item.name" :src="item.coverImageX">
                     </div>
                 </div>
                 <p class="title">{{item.name}}</p>
-                <p class="description">{{item.description}}</p>
             </div>
         </div>
     </div>
     <script src="./js/main.js"></script>
-    <script src="./js/actor_app.js"></script>
+    <script src="./js/special_app.js"></script>
 </body>
 </html>

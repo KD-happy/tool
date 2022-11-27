@@ -1,8 +1,9 @@
-var re05_token = $.cookie('re05_token')
-if (!re05_token) {
+var fi11_auth = $.cookie('fi11_auth')
+console.log(fi11_auth)
+if (!fi11_auth) {
     Toast.fire({
         icon: 'error',
-        text: 're05_token 为空！！请登录！！'
+        text: 'fi11_auth 为空！！请登录！！'
     })
     $("#login").show()
     $("#add_token").show()
@@ -13,52 +14,50 @@ if (!re05_token) {
 var search = Object.fromEntries(new URLSearchParams(location.search))
 if (search.videoId) {
     $.ajax({
-        url: 'https://www.kmqsaq.com/video/getInfo',
+        url: 'https://www.hxc-api.com/videos/getInfo',
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify({
-            clientType: 1,
-            videoId: search.videoId
+            videoId: parseInt(search.videoId)
         }),
         success: function(data, textStatus) {
-            if (data.code != 1) {
+            if (data.code != 0) {
                 Toast.fire({
                     icon: 'error',
-                    text: data.message
+                    text: data.msg
                 })
                 return
             }
-            var json = JSON.parse(aesDecrypt(data.data))
-            $("title").text(`视频播放 - ${json.info.name}`)
+            $("title").text(`视频播放 - ${data.data.info.name}`)
         }
     })
     $.ajax({
-        url: 'https://kmqsaq.com/video/getUrl',
+        url: 'https://www.hxc-api.com/videos/getPreUrl',
         type: 'POST',
-        contentType: 'application/json',
         headers: {
-            token: re05_token
+            auth: fi11_auth
         },
-        data: JSON.stringify({
-            "clientType":1,
+        data: {
             "videoId": search.videoId
-        }),
+        },
         success: function(data, textStatus) {
-            if (data.code != 1) {
+            if (data.code != 0) {
                 Toast.fire({
                     icon: 'error',
-                    text: data.message
+                    text: data.msg
                 })
                 if (data.code == 10) {
-                    $.removeCookie('re05_token')
+                    $.removeCookie('fi11_auth')
                 }
                 return
             }
-            var json = JSON.parse(aesDecrypt(data.data))
+            let url = new URL(data.data.url)
+            url.searchParams.delete('start')
+            url.searchParams.delete('end')
             window.dp = new DPlayer({
                 container: document.getElementById('dplayer'),
                 video: {
-                    url: json.url,
+                    url: url.toString()
                 },
                 screenshot: true
             });

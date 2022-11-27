@@ -5,8 +5,7 @@ const vm = new Vue({
         page: 1,
         typeId: 0 ,
         length: 30,
-        canLoad: true,
-        searchText: ''
+        canLoad: true
     },
     methods: {
         login: function() {
@@ -28,45 +27,43 @@ const vm = new Vue({
                 var _this = this
                 this.canLoad = false
                 $.ajax({
-                    url: 'https://www.kmqsaq.com/video/getList',
+                    url: 'https://www.hxc-api.com/videos/getList',
                     type: 'post',
                     headers: {
                         'content-type': 'application/json;charset=UTF-8'
                     },
                     data: JSON.stringify({
-                        clientType: 1,
+                        type: 1,
                         page: this.page,
                         length: this.length,
+                        typeId: parseInt(this.typeId),
                         orderText: [{
-                            column: "addTimeStamp",
-                            dir: "desc"
-                        }],
-                        searchText: _this.searchText,
-                        type: 1
+                            dir: "desc",
+                            column: "addTimeStamp"
+                        }]
                     }),
                     success: function(data, textStatus) {
-                        if (data.code != 1) {
+                        if (data.code != 0) {
                             Toast.fire({
                                 icon: 'error',
-                                text: data.message
+                                text: data.msg
                             })
                             return
                         }
-                        let json = JSON.parse(aesDecrypt(data.data))
-                        json.list.forEach(f => {
+                        data.data.list.forEach(f => {
                             _this.videoList.push(f)
                             // 加载图片
                             $.ajax({
                                 url: f.coverImgUrl,
                                 success: function(data, textStatus) {
-                                    f.coverImgUrl = `data:image/jpg;base64,${data.replace(/^kuaimaoshipin/, "")}`
+                                    f.coverImgUrl = decryptFn(data)
                                 }
                             })
                         })
-                        if (json.list.length == _this.length) {
+                        if (data.data.list.length == _this.length) {
                             Toast.fire({
                                 icon: 'success',
-                                text: `${_this.page*_this.length}/${json.recordsTotal}`
+                                text: `${_this.page*_this.length}/${data.data.count}`
                             })
                             _this.canLoad = true
                             _this.page++
@@ -100,10 +97,21 @@ const vm = new Vue({
         }
     }
 })
+var types = [
+    {typeId: 4, title: "国产"},
+    {typeId: 11, title: "主播"},
+    {typeId: 17, title: "日韩"},
+    {typeId: 23, title: "欧美"},
+    {typeId: 29, title: "动漫"},
+]
 var search = Object.fromEntries(new URLSearchParams(location.search))
-$("title").text(`搜索 - ${search.search ? search.search : ""}`)
 
-vm.searchText = search.search ? search.search : ""
+types.forEach(f => {
+    if (search.type && f.typeId == search.type) {
+        vm.typeId = search.type
+        $('title').text(f.title)           
+    }
+})
 vm.getList()
 window.addEventListener('scroll', function(e) {
     let scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop

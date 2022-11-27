@@ -28,13 +28,12 @@ const vm = new Vue({
                 var _this = this
                 this.canLoad = false
                 $.ajax({
-                    url: 'https://www.kmqsaq.com/video/getList',
+                    url: 'https://www.hxc-api.com/videos/getList',
                     type: 'post',
                     headers: {
                         'content-type': 'application/json;charset=UTF-8'
                     },
                     data: JSON.stringify({
-                        clientType: 1,
                         page: this.page,
                         length: this.length,
                         orderText: [{
@@ -45,28 +44,26 @@ const vm = new Vue({
                         type: 1
                     }),
                     success: function(data, textStatus) {
-                        if (data.code != 1) {
+                        if (data.code != 0) {
                             Toast.fire({
                                 icon: 'error',
-                                text: data.message
+                                text: data.msg
                             })
                             return
                         }
-                        let json = JSON.parse(aesDecrypt(data.data))
-                        json.list.forEach(f => {
+                        data.data.list.forEach(f => {
                             _this.videoList.push(f)
-                            // 加载图片
                             $.ajax({
                                 url: f.coverImgUrl,
                                 success: function(data, textStatus) {
-                                    f.coverImgUrl = `data:image/jpg;base64,${data.replace(/^kuaimaoshipin/, "")}`
+                                    f.coverImgUrl = decryptFn(data)
                                 }
                             })
                         })
-                        if (json.list.length == _this.length) {
+                        if (data.data.list.length == _this.length) {
                             Toast.fire({
                                 icon: 'success',
-                                text: `${_this.page*_this.length}/${json.recordsTotal}`
+                                text: `${_this.page*_this.length}/${data.data.count}`
                             })
                             _this.canLoad = true
                             _this.page++

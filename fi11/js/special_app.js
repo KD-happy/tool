@@ -7,28 +7,26 @@ const vm = new Vue({
         getList: function() {
             var _this = this
             $.ajax({
-                url: 'https://www.kmqsaq.com/actor/getActorList',
+                url: 'https://www.hxc-api.com/album/getAlbumList',
                 type: 'post',
                 data: JSON.stringify({
-                    clientType: 1,
                     length: 99999,
                     page: 1
                 }),
                 contentType: 'application/json',
                 success: function(data, textStatus) {
-                    if (data.code != 1) {
+                    if (data.code != 0) {
                         Toast.fire({
                             icon: 'error',
-                            text: data.message
+                            text: data.msg
                         })
                     } else {
-                        let album_list = JSON.parse(aesDecrypt(data.data))
-                        album_list.list.forEach(f => {
+                        data.data.list.forEach(f => {
                             _this.videoList.push(f)
                             $.ajax({
-                                url: f.headIco,
+                                url: f.coverImageX,
                                 success: function(data, textStatus) {
-                                    f.headIco = `data:image/jpg;base64,${data.replace(/^kuaimaoshipin/, "")}`
+                                    f.coverImageX = decryptFn(data)
                                 }
                             })
                         })
@@ -37,7 +35,7 @@ const vm = new Vue({
             })
         },
         playVideo: function(id) {
-            window.open(`./actor_type.html?actorId=${id}`)
+            window.open(`./special_type.html?albumId=${id}`)
         }
     }
 })

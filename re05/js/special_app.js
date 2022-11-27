@@ -23,7 +23,6 @@ const vm = new Vue({
                         })
                     } else {
                         let album_list = JSON.parse(aesDecrypt(data.data))
-                        console.log(album_list)
                         album_list.list.forEach(f => {
                             _this.videoList.push(f)
                             $.ajax({

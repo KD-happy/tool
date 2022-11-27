@@ -3,10 +3,9 @@ const vm = new Vue({
     data: {
         videoList: [],
         page: 1,
-        typeId: 0 ,
-        length: 30,
-        canLoad: true,
-        searchText: ''
+        length: 20,
+        actorId: 2,
+        canLoad: true
     },
     methods: {
         login: function() {
@@ -28,45 +27,37 @@ const vm = new Vue({
                 var _this = this
                 this.canLoad = false
                 $.ajax({
-                    url: 'https://www.kmqsaq.com/video/getList',
+                    url: 'https://www.hxc-api.com/actor/getActorVideoList',
                     type: 'post',
                     headers: {
                         'content-type': 'application/json;charset=UTF-8'
                     },
                     data: JSON.stringify({
-                        clientType: 1,
                         page: this.page,
                         length: this.length,
-                        orderText: [{
-                            column: "addTimeStamp",
-                            dir: "desc"
-                        }],
-                        searchText: _this.searchText,
-                        type: 1
+                        actorId: parseInt(this.actorId)
                     }),
                     success: function(data, textStatus) {
-                        if (data.code != 1) {
+                        if (data.code != 0) {
                             Toast.fire({
                                 icon: 'error',
-                                text: data.message
+                                text: data.msg
                             })
                             return
                         }
-                        let json = JSON.parse(aesDecrypt(data.data))
-                        json.list.forEach(f => {
+                        data.data.list.forEach(f => {
                             _this.videoList.push(f)
-                            // 加载图片
                             $.ajax({
                                 url: f.coverImgUrl,
                                 success: function(data, textStatus) {
-                                    f.coverImgUrl = `data:image/jpg;base64,${data.replace(/^kuaimaoshipin/, "")}`
+                                    f.coverImgUrl = decryptFn(data)
                                 }
                             })
                         })
-                        if (json.list.length == _this.length) {
+                        if (data.data.list.length == _this.length) {
                             Toast.fire({
                                 icon: 'success',
-                                text: `${_this.page*_this.length}/${json.recordsTotal}`
+                                text: `${_this.page*_this.length}/${data.data.count}`
                             })
                             _this.canLoad = true
                             _this.page++
@@ -101,9 +92,11 @@ const vm = new Vue({
     }
 })
 var search = Object.fromEntries(new URLSearchParams(location.search))
-$("title").text(`搜索 - ${search.search ? search.search : ""}`)
+var actorId = 27
+actorId = search.actorId != null ? search.actorId : actorId
+get_actor_title(actorId)
 
-vm.searchText = search.search ? search.search : ""
+vm.actorId = actorId
 vm.getList()
 window.addEventListener('scroll', function(e) {
     let scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop

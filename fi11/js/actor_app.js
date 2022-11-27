@@ -7,7 +7,7 @@ const vm = new Vue({
         getList: function() {
             var _this = this
             $.ajax({
-                url: 'https://www.kmqsaq.com/actor/getActorList',
+                url: 'https://www.hxc-api.com/actor/getActorList',
                 type: 'post',
                 data: JSON.stringify({
                     clientType: 1,
@@ -16,19 +16,18 @@ const vm = new Vue({
                 }),
                 contentType: 'application/json',
                 success: function(data, textStatus) {
-                    if (data.code != 1) {
+                    if (data.code != 0) {
                         Toast.fire({
                             icon: 'error',
-                            text: data.message
+                            text: data.msg
                         })
                     } else {
-                        let album_list = JSON.parse(aesDecrypt(data.data))
-                        album_list.list.forEach(f => {
+                        data.data.list.forEach(f => {
                             _this.videoList.push(f)
                             $.ajax({
                                 url: f.headIco,
                                 success: function(data, textStatus) {
-                                    f.headIco = `data:image/jpg;base64,${data.replace(/^kuaimaoshipin/, "")}`
+                                    f.headIco = decryptFn(data)
                                 }
                             })
                         })
