@@ -92,7 +92,6 @@ var types = [
     {typeId: 3, title: "AV"},
     {typeId: 4, title: "裸舞"},
     {typeId: 5, title: "里番动漫"},
-    {typeId: 8, title: "里番动漫"},
     {typeId: 7, title: "3D动漫"},
     {typeId: 10, title: "ASMR"},
     {typeId: 12, title: "网黄"},
