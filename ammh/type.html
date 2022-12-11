@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./source/vue-2.6.12.js"></script>
+    <script src="./source/jquery.min.js"></script>
+    <script src="./source/jquery.cookie.min.js"></script>
+    <script src="./source/DPlayer.min.js"></script>
+    <script src="./source/hls.min.js"></script>
+    <script src="./source/crypto-js.min.js"></script>
+    <script src="./source/sweetalert2.all.min.js"></script>
+    <title>里番动漫</title>
+</head>
+<body>
+    <div id="app">
+        <div class="videoListBox">
+            <!-- vue for循环 -->
+            <div class="videoListStyle" v-for="(item, index) in videoList" :key="item.id">
+                <div class="imgArea">
+                    <div class="play" :videoid="item.tid" @click="playVideo(item.id)">
+                        <img :title="item.name" :src="item.covers">
+                    </div>
+                </div>
+                <div class="time">{{item.duration}}</div>
+                <p class="title">{{item.name}}</p>
+                <!-- <button id="play_blank" @click="">新窗口</button> -->
+            </div>
+        </div>
+        <div id="button">
+            <!-- <button id="add_token" @click="">添加token</button> -->
+            <button id="continue" @click="">继续播放</button>
+            <button id="add" @click="getList">添加</button>
+            <button id="home" @click="home">首页</button>
+        </div>
+        <div id="player">
+            <button id="close" @click="close">关闭</button>
+            <div id="dplayer"></div>
+        </div>
+    </div>
+    <script src="./js/main.js"></script>
+    <script src="./js/type_app.js"></script>
+</body>
+</html>
