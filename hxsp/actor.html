@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="referrer" content="no-referrer">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/actor.css">
+    <script src="./source/vue-2.6.12.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/limonte-sweetalert2/11.6.15/sweetalert2.all.min.js"></script>
+    <title>演员列表</title>
+</head>
+<body>
+    <div id="app">
+        <div class="videoListBox">
+            <!-- vue for循环 -->
+            <div class="videoListStyle" v-for="(item, index) in videoList" :key="item.id">
+                <div class="imgArea">
+                    <div class="play" :videoid="item.id" @click="playVideo(item.id)">
+                        <img :title="item.username" :src="item.headIco">
+                    </div>
+                </div>
+                <p class="title">{{item.username}}</p>
+                <p class="description">{{item.remark}}</p>
+            </div>
+        </div>
+    </div>
+    <script src="./js/main.js"></script>
+    <script src="./js/actor_app.js"></script>
+</body>
+</html>
