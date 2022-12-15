@@ -24,12 +24,12 @@
                         <img :title="item.name" :src="item.coverImgUrl">
                     </div>
                 </div>
-                <div class="addTime">{{item.addTime}}</div>
-                <div class="time">{{item.length | getVideoTimeLength}}</div>
+                <div class="addTime">{{item.updated_at}}</div>
+                <div class="time">{{item.second}}</div>
                 <p class="title">{{item.name}}</p>
                 <ul class="bottomSignBox">
-                    <li class="seeCount">播放次数: {{item.seeCount}}</li>
-                    <li class="point">钻石数: {{item.point}}</li>
+                    <li class="seeCount">播放次数: {{item.play_num}}</li>
+                    <!-- <li class="point">钻石数: {{item.point}}</li> -->
                 </ul>
                 <button id="play_blank" @click="playNew(item.id)">新窗口</button>
             </div>

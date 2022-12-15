@@ -80,7 +80,18 @@ li {
 
 .imgArea img {
     height: 100%;
+    max-width: 290px;
+    object-fit: contain;
+    /* width: 100%; */
+}
+.imgArea .play::after {
+    content: "";
+    height: 25px;
     width: 100%;
+    display: block;
+    position: absolute;
+    bottom: 80px;
+    background: linear-gradient(to top, #222, #2224);
 }
 
 /* 添加按钮 */

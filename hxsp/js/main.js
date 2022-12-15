@@ -161,18 +161,25 @@ function playVideo(id) {
                 },
                 screenshot: true
             });
+        },
+        error: function(data) {
+            data = JSON.parse(data.responseText)
+            Toast.fire({
+                icon: 'error',
+                text: data.message
+            })
         }
     })
 }
 function add_token() {
     let tmp_token = prompt("请输入token：")
-    hxsp_token = tmp_token
+    hxsp_token = decodeURIComponent(tmp_token)
     if (tmp_token) {
         Toast.fire({
             icon: 'success',
             text: '添加成功'
         })
-        $.cookie('hxsp_token', tmp_token, {expires: 1})
+        $.cookie('hxsp_token', decodeURIComponent(tmp_token), {expires: 1})
         $("#login").hide()
         $("#add_token").hide()
     } else {

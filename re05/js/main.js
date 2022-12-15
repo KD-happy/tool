@@ -178,13 +178,13 @@ function playVideo(id) {
 }
 function add_token() {
     let tmp_token = prompt("请输入token：")
-    re05_token = tmp_token
+    re05_token = decodeURIComponent(tmp_token)
     if (tmp_token) {
         Toast.fire({
             icon: 'success',
             text: '添加成功'
         })
-        $.cookie('re05_token', tmp_token, {expires: 1})
+        $.cookie('re05_token', decodeURIComponent(tmp_token), {expires: 1})
         $("#login").hide()
         $("#add_token").hide()
     } else {
