@@ -43,9 +43,9 @@ const vm = new Vue({
                         }
                         let json = JSON.parse(atob(data.data.substr(6)))
                         json.data.forEach(f => {
-                            f.covers = 'https://tpa.moonfish0x.xyz/a/ns/assets28/img/mybg.107aa23f.png'
+                            f.covers = 'https://ora.80000.pro/a/ns/assets31/img/mybg.107aa23f.png'
                             _this.videoList.push(f)
-                            let _url = `https://ob.moonfish0x.xyz/vd/${f.tid}/${f.cover.replace('.bnc', '.nmv')}`
+                            let _url = `https://orb.80000.pro/vd/${f.tid}/${f.cover.replace('.bnc', '.nmv')}`
                             ;((f) => {
                                 var xhr = new XMLHttpRequest()
                                 xhr.open('get', _url)
